@@ -1,0 +1,45 @@
+<div>
+  <h2>Step 3: Summary</h2>
+
+  <div
+    *ngIf="selectedModel && selectedConfig && selectedColor"
+    class="summary-container"
+  >
+    <div class="summary">
+      <h3>Your Tesla {{ selectedModel.description }}</h3>
+      <div class="item">
+        <span>{{ selectedConfig.description }}</span>
+        <span>{{ selectedConfig.price | currency : "USD" }}</span>
+      </div>
+      <div class="details">
+        <p>
+          Range: {{ selectedConfig.range }} miles - Max speed:
+          {{ selectedConfig.speed }} mph
+        </p>
+      </div>
+      <div class="item">
+        <span>{{ selectedColor.description }} Color</span>
+        <span>$6,500.00</span>
+      </div>
+      <div *ngIf="towHitch" class="item">
+        <span>Tow Hitch Package</span>
+        <span>$1,000.00</span>
+      </div>
+      <div *ngIf="yoke" class="item">
+        <span>Yoke Steering Wheel</span>
+        <span>$1,000.00</span>
+      </div>
+      <hr />
+      <div class="total">
+        <span>Total Cost</span>
+        <span>{{ totalCost | currency : "USD" }}</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="selectedImage">
+    <img [src]="selectedImage" alt="Selected Car" />
+  </div>
+
+  <button id="step1" (click)="navigateToStep1()">Back to Step 1</button>
+  <button id="step2" (click)="navigateToStep2()">Back to Step 2</button>
+</div>

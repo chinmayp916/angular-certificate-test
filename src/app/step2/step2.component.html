@@ -1,0 +1,44 @@
+<div>
+  <h2>Step2: Select your config and options</h2>
+
+  <label for="configSelect">Configurations:</label>
+  <select
+    id="configSelect"
+    [(ngModel)]="selectedConfig"
+    (change)="onConfigChange()"
+  >
+    <option *ngFor="let config of configs" [ngValue]="config">
+      {{ config.description }}
+    </option>
+  </select>
+
+  <div *ngIf="selectedConfig" class="selectedConfig">
+    <p>Range: {{ selectedConfig.range }} miles&nbsp;&nbsp;&nbsp;-</p>
+    <p>Max Speed: {{ selectedConfig.speed }} mph&nbsp;&nbsp;&nbsp;-</p>
+    <p>Cost: {{ selectedConfig.price | currency : "USD" }}</p>
+  </div>
+
+  <div>
+    <label for="towHitch">Tow Hitch?</label>
+    <input
+      type="checkbox"
+      id="towHitch"
+      [(ngModel)]="towHitch"
+      (change)="onTowHitchChange()"
+    />
+  </div>
+
+  <div>
+    <label for="includeYoke">Include Yoke Steering Wheel?</label>
+    <input
+      type="checkbox"
+      id="yoke"
+      [(ngModel)]="yoke"
+      (change)="onYokeChange()"
+    />
+  </div>
+  <button id="step1" (click)="backToStep1()">Back to Step 1</button>
+  <button id="step3" (click)="proceedToStep3()" [disabled]="!selectedConfig">
+    Proceed to Step 3
+  </button>
+</div>

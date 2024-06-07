@@ -1,0 +1,23 @@
+<div class="container">
+  <h1>Car Configurator</h1>
+  <nav>
+    <div class="nav nav-tabs">
+      <div class="nav-item">
+        <a class="nav-link" [routerLink]="['/step1']" id="step1"
+          >Step 1: Select Model and Color</a
+        >
+      </div>
+      <div class="nav-item" [class.disabled]="step1Filled">
+        <a class="nav-link" [routerLink]="['/step2']" id="step2"
+          >Step 2: Select Configuration and Options</a
+        >
+      </div>
+      <div class="nav-item" [class.disabled]="step1Filled">
+        <a class="nav-link" [routerLink]="['/step3']" id="step3"
+          >Step 3: Recap and Total Cost</a
+        >
+      </div>
+    </div>
+  </nav>
+  <router-outlet (step1Filled)="step1Filled = $event"></router-outlet>
+</div>
