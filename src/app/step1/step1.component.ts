@@ -1,94 +1,56 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ConfiguratorService } from '../services/configurator.service';
-import { AppComponent } from '../app.component';
+import { Component, OnInit } from '@angular/core';
+import { CarDetailsService } from '../service/car-details.service';
+import { CommonService } from '../service/common.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Model } from '../model/Model';
+import { Color } from '../model/Color';
+import { SelectedCar } from '../model/SelectedCar';
 
 @Component({
   selector: 'app-step1',
+  standalone: true,
+  imports: [FormsModule,CommonModule],
   templateUrl: './step1.component.html',
-  styleUrls: ['./step1.component.scss'],
+  styleUrl: './step1.component.scss'
 })
-export class Step1Component implements OnInit {
-  models: any[] = [];
-  colors: any[] = [];
-  selectedModel: string | null = null;
-  selectedColor: string | null = null;
-  selectedImage: string | null = null;
-  // step1Filled: any;
-  @Input() step1Filled?: any;
+export class Step1Component implements OnInit{
+ 
+  carModels: Array<Model> =[];
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private configuratorService: ConfiguratorService,
-    private appComponent: AppComponent
-  ) {}
+  selectedModel?:Model;
+  selectedColor?:Color;
 
-  ngOnInit(): void {
-    this.http.get('https://github.com/chinmayp916/angular-certificate-test/models').subscribe((data: any) => {
-      this.models = data;
-      this.setStoredData();
-    });
-    this.step1Filled = this.appComponent.step1Filled
-  }
+  selectedCar:SelectedCar=new SelectedCar();
 
-  setStoredData() {
-    const storedModel = this.configuratorService.selectedModel;
-    const storedColor = this.configuratorService.selectedColor;
-    if (storedModel) {
-      this.selectedModel = storedModel.code;
-      this.onModelChange();
-    }
-    if (storedColor) {
-      this.selectedColor = storedColor.code;
-      this.onColorChange();
-    }
-  }
-
-  onModelChange() {
-    const selectedModel = this.models.find(
-      (model) => model.code === this.selectedModel
+  constructor(private carDetailsService:CarDetailsService, private commonService:CommonService){}
+ 
+  ngOnInit(){
+    this.commonService.SelectedCarObservable.subscribe(
+      (selectedCar:SelectedCar) =>
+      { 
+        this.selectedCar=selectedCar;
+        this.carDetailsService.getCarModels().subscribe(
+          data =>
+          {
+            this.carModels=data;
+            this.selectedModel=this.carModels.find(x=> x.code == this.selectedCar.model?.code);
+            this.selectedColor=this.selectedModel?.colors.find(x=>x.code == this.selectedCar.color?.code); 
+          }
+        );
+      }
     );
-
-    this.colors = selectedModel ? selectedModel.colors : [];
-    this.selectedColor = '';
-    this.selectedImage = '';
-    this.configuratorService.selectedModel = selectedModel;
-    this.configuratorService.selectedModelCode = selectedModel.code;
-    this.onColorChange();
   }
 
-  onColorChange() {
-    const selectedModel = this.models.find(
-      (model) => model.code === this.selectedModel
-    );
-    let selectedColor = this.colors.find(
-      (color) => color.code === this.selectedColor
-    );
-    selectedColor = selectedColor ? selectedColor : this.colors[0];
-    
-    if (selectedModel && selectedColor) {
-      this.selectedImage =
-        this.configuratorService.selectedImage = `https://interstate21.com/tesla-app/images/${selectedModel.code}/${selectedColor.code}.jpg`;
-    }
-    this.configuratorService.selectedColor = selectedColor;
+  onSelectColorChange(){
+    this.selectedCar.color=this.selectedColor;
+    this.commonService.SelectedCar(this.selectedCar);
   }
 
-  updateSelectedImage(): void {
-    if (this.selectedModel) {
-      this.colors = this.models.find(
-        (x: any) => x.code === this.selectedModel
-      )?.colors;
-      const color = this.colors.find((c) => c.code === this.selectedColor);
-      this.selectedImage = color ? color.image : null;
-    }
-  }
-
-  proceedToStep2(): void {
-    if (this.selectedModel && this.selectedColor) {
-      this.step1Filled = false;
-      this.router.navigate(['/step2']);
-    }
+  onSelectModelChange(){
+    this.selectedColor=undefined;
+    this.selectedCar=new SelectedCar();
+    this.selectedCar.model=this.selectedModel;
+    this.commonService.SelectedCar(this.selectedCar);
   }
 }

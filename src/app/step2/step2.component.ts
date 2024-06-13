@@ -1,80 +1,62 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ConfiguratorService } from '../services/configurator.service';
-
-interface Config {
-  id: number;
-  description: string;
-  range: number;
-  speed: number;
-  price: number;
-}
+import { Component } from '@angular/core';
+import { CarDetailsService } from '../service/car-details.service';
+import { CommonService } from '../service/common.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Option } from '../model/Option';
+import { Config } from '../model/Config';
+import { SelectedCar } from '../model/SelectedCar';
 
 @Component({
   selector: 'app-step2',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './step2.component.html',
-  styleUrls: ['./step2.component.scss'],
+  styleUrl: './step2.component.scss'
 })
-export class Step2Component implements OnInit {
-  configs: Config[] = [];
-  selectedConfig: any | null = null;
-  towHitch: boolean = false;
-  yoke: boolean = false;
+export class Step2Component {
+  carOption?: Option;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private configuratorService: ConfiguratorService
-  ) {}
+  selectedConfig?:Config;
+  towHitchChecked:boolean=false;
+  yokeChecked:boolean=false;
 
-  ngOnInit(): void {
-    if (
-      !this.configuratorService.selectedModel ||
-      !this.configuratorService.selectedColor
-    ) {
-      this.router.navigate(['/step1']);
-      return;
-    }
-    const selectedModel = this.configuratorService.selectedModel;
-    if (selectedModel) {
-      const selectedModelCode = this.configuratorService.selectedModelCode; // Get the selected model code from the previous step
-      this.http
-        .get(
-          `https://github.com/chinmayp916/angular-certificate-test/options/${selectedModelCode}`
-        )
-        .subscribe((data: any) => {
-          this.configs = data.configs;
-          this.towHitch = data.towHitch;
-          this.yoke = data.yoke;
-        });
-    }
+  selectedCar:SelectedCar=new SelectedCar();
+
+  constructor(private carDetailsService:CarDetailsService,private commonService: CommonService){}
+
+  ngOnInit()
+  {
+    this.commonService.SelectedCarObservable.subscribe(
+      (selectedCar:SelectedCar) =>
+      {
+        this.selectedCar=selectedCar;
+        this.carDetailsService.getCarOptions(this.selectedCar.model?.code!).subscribe(
+          (options:Option) => 
+          {
+            this.carOption=options;
+            this.selectedConfig=this.carOption?.configs.find(x=> x.id==this.selectedCar.config?.id);
+            this.yokeChecked=this.selectedCar.yoke;
+            this.towHitchChecked=this.selectedCar.tow;
+          }
+        );
+      } 
+    );
   }
 
-  onConfigChange() {
-    this.configuratorService.selectedConfig = this.selectedConfig;
+  onSelectConfigChange(){
+     this.selectedCar.config=this.selectedConfig;
+     this.commonService.SelectedCar(this.selectedCar);
   }
 
-  onYokeChange() {
-    this.configuratorService.yoke = this.yoke;
+  onTowHitchChange(){
+    this.selectedCar.tow=this.towHitchChecked;
+    this.commonService.SelectedCar(this.selectedCar);
   }
 
-  onTowHitchChange() {
-    this.configuratorService.towHitch = this.towHitch;
+  onYokeChange(){
+    this.selectedCar.yoke=this.yokeChecked;
+    this.commonService.SelectedCar(this.selectedCar);
   }
 
-  backToStep1(): void {
-    if (this.selectedConfig) {
-      this.router.navigate(['/step1']);
-    }
-  }
-
-  proceedToStep3(): void {
-    if (this.selectedConfig) {
-      this.configuratorService.selectedConfig = this.selectedConfig;
-      this.configuratorService.towHitch = this.towHitch;
-      this.configuratorService.yoke = this.yoke;
-      this.router.navigate(['/step3']);
-    }
-  }
 }

@@ -1,23 +1,14 @@
-<div class="container">
+<div >
   <h1>Car Configurator</h1>
   <nav>
-    <div class="nav nav-tabs">
-      <div class="nav-item">
-        <a class="nav-link" [routerLink]="['/step1']" id="step1"
-          >Step 1: Select Model and Color</a
-        >
-      </div>
-      <div class="nav-item" [class.disabled]="step1Filled">
-        <a class="nav-link" [routerLink]="['/step2']" id="step2"
-          >Step 2: Select Configuration and Options</a
-        >
-      </div>
-      <div class="nav-item" [class.disabled]="step1Filled">
-        <a class="nav-link" [routerLink]="['/step3']" id="step3"
-          >Step 3: Recap and Total Cost</a
-        >
-      </div>
+    <div class="flex-row">
+      <div class="items"><button class="btn" id="step1" routerLink="/Step1">Step 1</button></div>
+      <div class="items"><button class="btn" id="step2" routerLink="/Step2" [disabled]="isStep2Disabled">Step 2</button></div>
+      <div class="items"><button class="btn" id="step3" routerLink="/Step3" [disabled]="isStep3Disabled">Step 3</button></div>
     </div>
   </nav>
-  <router-outlet (step1Filled)="step1Filled = $event"></router-outlet>
+  <router-outlet></router-outlet>
+  <div class="img" >
+    <img class="spec-img" *ngIf="!isStep2Disabled"[src]="imgUrl"/>
+</div>
 </div>

@@ -1,44 +1,20 @@
 <div>
-  <h2>Step2: Select your config and options</h2>
+    <h1>Step 2 : Select your config and options</h1>
+    <form>
+       <label for="config">Config</label>
+       <select id="configSelect" [(ngModel)]="selectedConfig" name="config" (ngModelChange)="onSelectConfigChange()"> 
+           <option *ngFor="let config of carOption?.configs" [ngValue]="config">{{config.description}}</option>
+       </select>
+      
+       <div>Range: {{selectedConfig?.range}} miles - Max Speed: {{selectedConfig?.speed}} - Cost:$ {{selectedConfig?.price | number: '1.2-2'}}</div>
+       <div *ngIf="carOption?.towHitch">
+       <label for="towHitch">Tow hitch? </label>
+       <input type="checkbox" id="includeTow" name="towHitch" [(ngModel)]="towHitchChecked" (ngModelChange)="onTowHitchChange()">
+       </div>
 
-  <label for="configSelect">Configurations:</label>
-  <select
-    id="configSelect"
-    [(ngModel)]="selectedConfig"
-    (change)="onConfigChange()"
-  >
-    <option *ngFor="let config of configs" [ngValue]="config">
-      {{ config.description }}
-    </option>
-  </select>
-
-  <div *ngIf="selectedConfig" class="selectedConfig">
-    <p>Range: {{ selectedConfig.range }} miles&nbsp;&nbsp;&nbsp;-</p>
-    <p>Max Speed: {{ selectedConfig.speed }} mph&nbsp;&nbsp;&nbsp;-</p>
-    <p>Cost: {{ selectedConfig.price | currency : "USD" }}</p>
-  </div>
-
-  <div>
-    <label for="towHitch">Tow Hitch?</label>
-    <input
-      type="checkbox"
-      id="towHitch"
-      [(ngModel)]="towHitch"
-      (change)="onTowHitchChange()"
-    />
-  </div>
-
-  <div>
-    <label for="includeYoke">Include Yoke Steering Wheel?</label>
-    <input
-      type="checkbox"
-      id="yoke"
-      [(ngModel)]="yoke"
-      (change)="onYokeChange()"
-    />
-  </div>
-  <button id="step1" (click)="backToStep1()">Back to Step 1</button>
-  <button id="step3" (click)="proceedToStep3()" [disabled]="!selectedConfig">
-    Proceed to Step 3
-  </button>
-</div>
+       <div *ngIf="carOption?.yoke">
+       <label for="yoke">Yoke steering wheel? </label>
+       <input type="checkbox" id="includeYoke" name="yoke" [(ngModel)]="yokeChecked" (ngModelChange)="onYokeChange()">
+       </div>
+    </form>
+   </div>

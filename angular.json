@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist",
+            "outputPath": "dist/tesla-configurator",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -100,6 +100,6 @@
     }
   },
   "cli": {
-    "analytics": "7bafb840-8b02-4141-bc4c-4e740d7a2db2"
+    "analytics": false
   }
 }
