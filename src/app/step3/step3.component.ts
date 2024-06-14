@@ -1,97 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ConfiguratorService } from '../services/configurator.service';
-
-interface Config {
-  code: string;
-  name: string;
-  range: number;
-  maxSpeed: number;
-  price: number;
-}
+import { Component } from '@angular/core';
+import { CommonService } from '../service/common.service';
+import { CommonModule } from '@angular/common';
+import { SelectedCar } from '../model/SelectedCar';
 
 @Component({
   selector: 'app-step3',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './step3.component.html',
-  styleUrls: ['./step3.component.scss'],
+  styleUrl: './step3.component.scss'
 })
-export class Step3Component implements OnInit {
-  selectedModel: any;
-  selectedConfig: any;
-  selectedColor: any;
-  selectedImage: any;
-  towHitch: boolean = false;
-  yoke: boolean = false;
-  totalCost: number = 0;
+export class Step3Component {
 
-  constructor(
-    private configuratorService: ConfiguratorService,
-    private router: Router
-  ) { }
+  selectedCar:SelectedCar=new SelectedCar();
 
-  ngOnInit(): void {
-    this.selectedModel = this.configuratorService.selectedModel;
-    this.selectedConfig = this.configuratorService.selectedConfig;
-    this.selectedColor = this.configuratorService.selectedColor;
-    this.selectedImage = this.configuratorService.selectedImage;
-    this.towHitch = this.configuratorService.towHitch;
-    this.yoke = this.configuratorService.yoke;
+  constructor(private commonService: CommonService){}
 
-    if (!this.selectedModel || !this.selectedConfig || !this.selectedColor) {
-      this.router.navigate(['/step1']);
-      return;
-    }
-
-    this.calculateTotalCost();
-  }
-
-  navigateToStep1() {
-    this.router.navigate(['/step1']);
-  }
-
-  navigateToStep2() {
-    this.router.navigate(['/step2']);
-  }
-
-  // getConfigDetails(configCode: string): any {
-  //   // This is a placeholder method to simulate fetching config details
-  //   // Replace this with an actual API call if needed
-  //   const configs: Config[] = [
-  //     {
-  //       code: 'config1',
-  //       name: 'Standard',
-  //       range: 250,
-  //       maxSpeed: 150,
-  //       price: 80000,
-  //     },
-  //     {
-  //       code: 'config2',
-  //       name: 'Long Range',
-  //       range: 350,
-  //       maxSpeed: 160,
-  //       price: 90000,
-  //     },
-  //     {
-  //       code: 'config3',
-  //       name: 'Performance',
-  //       range: 300,
-  //       maxSpeed: 180,
-  //       price: 100000,
-  //     },
-  //   ];
-  //   return configs.find((config) => config.code === configCode) || null;
-  // }
-
-  calculateTotalCost(): void {
-    if (this.selectedConfig) {
-      this.totalCost = this.selectedConfig.price;
-      this.totalCost += 6500;
-      if (this.towHitch) {
-        this.totalCost += 1000;
-      }
-      if (this.yoke) {
-        this.totalCost += 1000;
-      }
-    }
+  ngOnInit()
+  {
+    this.commonService.SelectedCarObservable.subscribe(selectedCar => this.selectedCar=selectedCar); 
   }
 }
